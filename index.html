@@ -1,94 +1,94 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Animated GIF City</title>
-  <script type="text/javascript" src="LZWEncoder.js"></script>
-  <script type="text/javascript" src="NeuQuant.js"></script>
-  <script type="text/javascript" src="GIFEncoder.js"></script>
-  <script type="text/javascript" src="b64.js"></script>
-	<script type="text/javascript" src="processing-1.4.1.min.js"></script>
-	<script type="text/javascript" src="jquery-2.1.0.min.js"></script>
-</head>
-<body>
-	<script type="text/processing" data-processing-target="processing-canvas">
-		float normalize_color(float val) {
-			if(val > 255) {
-				return 200;
-			} else if(val < 0) {
-				return 55;
-			} else {
-				return val;
-			}
-		}
-
-		color mutate_color(color c) {
-			float shift = random(100) - 50;
-			float new_red   = normalize_color(red(c)+shift);
-			float new_green = normalize_color(green(c));
-			float new_blue  = normalize_color(blue(c)-shift);
-
-			return color(new_red, new_green, new_blue);
-		}
-
-		void setup() {
-			size(400, 400);
-			noStroke();
-      frameRate(10);
-			noLoop();
-		}
-
-		int x = 0;
-		int y = 0;
-		color c = color(100, 150, 100);
-		void draw() {
-			fill(c);
-			rect(x, y, 40, 40);
-			x += 40;
-			if (x >= width) {
-				x = 0;
-				y += 40;
-			}
-			if (y >= height) {
-			  x = 0;
-			  y = 0;
-			}
-			c = mutate_color(c);
-      noLoop();
-			addFrame();
-		}
-	</script>
-  <canvas id="processing-canvas"></canvas><br>
-	<img id="output">
-	<script type="text/javascript">
-		var canvas = document.getElementById('processing-canvas');
-
-		var encoder = new GIFEncoder();
-		encoder.setRepeat(0);
-		encoder.setDelay(100);
-
-		encoder.start();
-
-		var instance = null;
-		var frames = 0;
-		addFrame = function() {
-		  var context = canvas.getContext('2d');
-		  encoder.addFrame(context);
-		  if (frames > 4) {
-		    encoder.finish();
-		    var data = encode64(encoder.stream().getData());
-		    $('#output').attr('src', 'data:image/gif;base64,' + data);
-      } else if (instance) {
-		    instance.loop();
+  <head>
+    <title>Animated GIF City</title>
+    <script type="text/javascript" src="LZWEncoder.js"></script>
+    <script type="text/javascript" src="NeuQuant.js"></script>
+    <script type="text/javascript" src="GIFEncoder.js"></script>
+    <script type="text/javascript" src="b64.js"></script>
+    <script type="text/javascript" src="processing-1.4.1.min.js"></script>
+    <script type="text/javascript" src="jquery-3.7.0.min.js"></script>
+  </head>
+  <body>
+    <script type="text/processing" data-processing-target="processing-canvas">
+      float normalize_color(float val) {
+      	if(val > 255) {
+      		return 200;
+      	} else if(val < 0) {
+      		return 55;
+      	} else {
+      		return val;
+      	}
       }
-			frames++;
-		}
 
-		$(document).ready(function() {
-			if (!instance) {
-				instance = Processing.getInstanceById('processing-canvas');
-		    instance.loop();
-			}
-		});
-	</script>
-</body>
+      color mutate_color(color c) {
+      	float shift = random(100) - 50;
+      	float new_red   = normalize_color(red(c)+shift);
+      	float new_green = normalize_color(green(c));
+      	float new_blue  = normalize_color(blue(c)-shift);
+
+      	return color(new_red, new_green, new_blue);
+      }
+
+      void setup() {
+      	size(400, 400);
+      	noStroke();
+          frameRate(10);
+      	noLoop();
+      }
+
+      int x = 0;
+      int y = 0;
+      color c = color(100, 150, 100);
+      void draw() {
+      	fill(c);
+      	rect(x, y, 40, 40);
+      	x += 40;
+      	if (x >= width) {
+      		x = 0;
+      		y += 40;
+      	}
+      	if (y >= height) {
+      	  x = 0;
+      	  y = 0;
+      	}
+      	c = mutate_color(c);
+          noLoop();
+      	addFrame();
+      }
+    </script>
+    <canvas id="processing-canvas"></canvas><br />
+    <img id="output" />
+    <script type="text/javascript">
+      var canvas = document.getElementById('processing-canvas');
+
+      var encoder = new GIFEncoder();
+      encoder.setRepeat(0);
+      encoder.setDelay(100);
+
+      encoder.start();
+
+      var instance = null;
+      var frames = 0;
+      addFrame = function () {
+        var context = canvas.getContext('2d');
+        encoder.addFrame(context);
+        if (frames > 4) {
+          encoder.finish();
+          var data = encode64(encoder.stream().getData());
+          $('#output').attr('src', 'data:image/gif;base64,' + data);
+        } else if (instance) {
+          instance.loop();
+        }
+        frames++;
+      };
+
+      $(document).ready(function () {
+        if (!instance) {
+          instance = Processing.getInstanceById('processing-canvas');
+          instance.loop();
+        }
+      });
+    </script>
+  </body>
 </html>
